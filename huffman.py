@@ -1,5 +1,5 @@
 import pickle as pl
-import argparse, os
+import argparse, pathlib
 
 def main():
     args = getArgs()
@@ -53,12 +53,12 @@ def encode(path):
 
     print(newText)
 
-    dirPath, fileName = os.path.split(path)
-    fileName = os.path.splitext(fileName)[0]
+    fullPath = pathlib.Path(path)
+    encodedFilePath = fullPath.parent / (fullPath.stem + '.huffman')
 
     binData = int(newText, 2).to_bytes((len(newText) + 7) // 8, byteorder='big')
     print(binData)
-    with open(f'{dirPath}{fileName}.huffman', 'wb') as f:
+    with open(encodedFilePath, 'wb') as f:
         pl.dump((symbolCodes, binData), f)
 
 def decode(path):
@@ -90,9 +90,9 @@ def decode(path):
     print(strBin)
     print(textBack)
 
-    dirPath, fileName = os.path.split(path)
-    fileName = os.path.splitext(fileName)[0]
-    with open(f'{dirPath}{fileName}_decoded.txt', 'w') as f:
+    fullPath = pathlib.Path(path)
+    decodedFilePath = fullPath.parent / (fullPath.stem + '_decoded.txt')
+    with open(decodedFilePath, 'w') as f:
         f.write(textBack)
 
 if __name__ == "__main__":
