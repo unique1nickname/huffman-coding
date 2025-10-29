@@ -5,18 +5,19 @@ def main():
     args = getArgs()
     match args.mode.lower():
         case 'encode':
-            encode(args.path)
+            encode(args.path, args.encoding)
         case 'decode':
-            decode(args.path) 
+            decode(args.path, args.encoding) 
 
 def getArgs():
     ap = argparse.ArgumentParser(description='Encodes and decodes text using the Huffman method')
     ap.add_argument('mode', type=str, help='Choose between "encode" and "decode" modes')
     ap.add_argument('path', type=str, help='Path to the file')
+    ap.add_argument('-e', '--encoding', type=str, default='utf-8', help='Select encoding for the text')
     return ap.parse_args()
 
-def encode(path):
-    with open(path, 'r') as file:
+def encode(path, encoding):
+    with open(path, 'r', encoding=encoding) as file:
         text = file.read()
     symbolFrequency = dict()
 
@@ -61,7 +62,7 @@ def encode(path):
     with open(encodedFilePath, 'wb') as f:
         pl.dump((symbolCodes, binData), f)
 
-def decode(path):
+def decode(path, encoding):
     with open(path, 'rb') as file:
         data = pl.load(file)
 
@@ -92,7 +93,7 @@ def decode(path):
 
     fullPath = pathlib.Path(path)
     decodedFilePath = fullPath.parent / (fullPath.stem + '_decoded.txt')
-    with open(decodedFilePath, 'w') as f:
+    with open(decodedFilePath, 'w', encoding=encoding) as f:
         f.write(textBack)
 
 if __name__ == "__main__":
